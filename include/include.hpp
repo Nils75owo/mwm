@@ -17,4 +17,6 @@
 #include <X11/Xutil.h>
 #include <X11/Xft/Xft.h>
 
+#include <sys/wait.h>
+
 #endif

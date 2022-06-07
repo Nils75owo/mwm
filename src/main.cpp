@@ -1,12 +1,12 @@
 #include "mwm.hpp"
+#include "classes.hpp"
 
 extern std::vector<Workspace*> workspaces;
-Display* display;
 
 bool running = true;
+mwm wm;
 
 int main() {
-	mwm wm;
 	wm.Workspaces = std::move(workspaces);
 	wm.monitors = {
 		Monitor()

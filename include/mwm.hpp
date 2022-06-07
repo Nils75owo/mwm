@@ -1,8 +1,11 @@
-#pragma once
+#ifndef MWM_HPP_
+#define MWM_HPP_
 
 #include "include.hpp"
-#include "classes.hpp"
 #include "utils.hpp"
+class Client;
+class Monitor;
+class Workspace;
 
 extern bool running;
 
@@ -21,6 +24,25 @@ struct Cur {
 	Cur(int shape);
 };
 
+typedef struct mwm mwm;
+extern mwm wm;
+
+typedef struct {
+	unsigned int mod;
+	KeySym keysym;
+
+	void (*func)(std::vector<const char *>);
+	std::vector<const char*> args;
+} Key;
+typedef struct {
+	unsigned int click;
+	unsigned int mask;
+	unsigned int button;
+
+	void (*func)(std::vector<const char *>);
+	std::vector<const char*> args;
+} Button;
+
 struct mwm {
 	Display *display;
 	Window root;
@@ -30,13 +52,28 @@ struct mwm {
 	int displayWidth;
 	int displayHeight;
 
-	int tmpWorkspaces;
+	std::map<const char*, XftColor> xColors;
+
+	unsigned int tmpWorkspaces;
+	unsigned int numlockmask;
 
 	std::vector<Monitor> monitors;
 
 	Atom wmatom[WMLast], netatom[NetLast];
 	Cur *cursor[CurLast];
 
+	void initColors(std::map<const char*, const char*> &colors);
+
+	void scan();
+	void grabKeys();
+	void grabButtons(Client *client, bool focused);
+	void updateNumlockMaks();
+	void configure(Client *client);
+	void manage(Window win, XWindowAttributes *windoAttributes);
+	void unmanage(Client *client, bool destroyed);
+
+	Drawable drawable;
+	GC gc;
 public:
 	std::vector<Workspace*> Workspaces;
 
@@ -54,3 +91,5 @@ public:
 	mwm();
 	~mwm();
 };
+
+#endif

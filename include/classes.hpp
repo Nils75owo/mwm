@@ -1,5 +1,8 @@
-#pragma once
+#ifndef CLASSES_HPP_
+#define CLASSES_HPP_
+
 #include "include.hpp"
+#include "mwm.hpp"
 
 typedef class Workspace Workspace;
 typedef class Client Client;
@@ -8,7 +11,6 @@ typedef class _BaseBlock _BaseBlock;
 
 extern const int minWindowX;
 extern const int minWindowY;
-extern Display* display;
 
 struct Monitor {
 	int monX, monY, monW, monH;
@@ -19,8 +21,10 @@ struct Monitor {
 
 	Monitor() {
 		monX = monY = winX = winY = 0;
-		monW = winW = 1920;
-		monH = winH = 1080;
+		monW = winW = 1024;
+		monH = winH = 600;
+		//monW = winW = 1920;
+		//monH = winH = 1080;
 	}
 };
 
@@ -46,6 +50,8 @@ struct _BaseBlock {
 	double size = 100.f;
 	Block* master;
 	bool isFixed, isCentered, isFloating, isUrgent, isFullscreen;
+
+	Monitor* monitor;
 };
 
 struct Block : _BaseBlock {
@@ -60,6 +66,20 @@ struct Client : _BaseBlock {
 	char type = 'w';
 	char name[256];
 	Window win;
+
+	void setState(long state) {
+		long data[] = { state, None };
+		XChangeProperty(
+			wm.display,
+			win,
+			wm.wmatom[WMState],
+			wm.wmatom[WMState],
+			32,
+			PropModeReplace,
+			(unsigned char*)data,
+			2
+		);
+	}
 };
 
 struct Layout {
@@ -68,3 +88,5 @@ struct Layout {
 	void removeWindow(Workspace *base);
 	void updateLayout(Workspace *base);
 };
+
+#endif
